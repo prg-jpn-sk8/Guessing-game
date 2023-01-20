@@ -1,36 +1,36 @@
 use std::io::stdin;
-use rand::Rng;
 use std::cmp::Ordering;
-use std::process;
+use rand::Rng;
+use rand::thread_rng;
+use colored::Colorize;
 
 fn main() {
-    _mainloop();
-}
+    println!("{}", "Guess Game!".truecolor(51, 0, 0));
 
-fn _mainloop() {
-    let number = rand::thread_rng().gen_range(0..=100);
+    let mut secret_number = thread_rng().gen_range(0..=100);
 
     loop {
-        let mut guess = String::new();
-        println!("Guess Number : ");
-        stdin().read_line(&mut guess).expect("Failed to read line");
+        println!("{}", "Enter a Number : ");
 
-        let guess: u8 = guess.trim().parse().expect("Type a Number");
-        match guess.cmp(&number) {
-            Ordering::Equal => { 
-                println!("Equal, You Win");
-                println!("Do you want to play again : ");
-                let mut again = String::new();
-                stdin().read_line(&mut again).expect("Failed");
-                let again: &str = again.trim();
-                if again == "yes" || again == "y" {
-                    _mainloop();
-                }else {
-                    process::exit(1);
-            }
+        let mut guess = String::new();
+
+        stdin().read_line(&mut guess).expect("Failed to read Line");
+
+        let guess: u8 = match guess.trim().parse() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("Type a Number");
+                continue
             },
-            Ordering::Greater => println!("Greater"),
-            Ordering::Less => println!("Less"),
+        };
+
+        match guess.cmp(&mut secret_number) {
+            Ordering::Greater => println!("{}", "Greater".red()),
+            Ordering::Less => println!("{}", "Less".blue()),
+            Ordering::Equal => {
+                println!("{}", "You Win".yellow());
+                break;
+            }
         }
     }
 }
